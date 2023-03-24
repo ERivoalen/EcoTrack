@@ -5,38 +5,39 @@ import { supabase } from './supabase';
 export default function LoginScreen({ navigation }) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
-    async function handleSignup() {
-        setLoading(true)
-        const { error } = await supabase.auth.signUp({
-            email: email,
-            password: password,
-        })
-
-        if (error) { Alert.alert(error.message) }
-        else {
-            alert('Sign Up !');
-            //navigation.Navigate('Account')
+    const handleSignup = async (e) => {
+        e.preventDefault();
+        try {
+            setLoading(true);
+            const { error } = await supabase.auth.signUp({ email, password })
+            if (error) throw error;
+            alert('You create an account !');
         }
-        setLoading(false)
+        catch (error) {
+            alert(error.error_desccription || error.message)
+        }
+        finally {
+            setLoading(false);
+        }
     }
 
-    async function handleLogin() {
-        setLoading(true)
-        const { error } = await supabase.auth.signInWithPassword({
-            email: email,
-            password: password,
-        })
-
-        if (error) { Alert.alert(error.message) }
-        else {
-            alert('Login !');
-            navigation.navigate('Account')
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        try {
+            setLoading(true);
+            const { error } = await supabase.auth.signInWithPassword({ email, password })
+            if (error) throw error;
         }
-        setLoading(false)
+        catch (error) {
+            alert(error.error_desccription || error.message)
+        }
+        finally {
+            setLoading(false);
+        }
     }
-
 
 
     return (

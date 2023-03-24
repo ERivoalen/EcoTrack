@@ -8,6 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 //Import DB
 import { supabase } from './components/supabase';
+import { Session } from '@supabase/supabase-js';
 //Import d'ecran
 
 import LoginScreen from './components/Login';
@@ -15,6 +16,7 @@ import MapScreen from './components/Map';
 //import CleanWalk from './components/CleanWalk';
 import HomeScreen from './components/HomeScreen';
 import Account from './components/Account';
+import AssociationScreen from './components/Association';
 
 
 const Tab = createBottomTabNavigator();
@@ -24,10 +26,7 @@ export default function App() {
 
   const [session, setSession] = useState(null)
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-    })
-
+    setSession(supabase.auth.getSession())
     supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session)
     })
@@ -38,8 +37,13 @@ export default function App() {
 
     return (
       <ProfileStack.Navigator>
-        <ProfileStack.Screen name="Login" component={LoginScreen} />
-        <ProfileStack.Screen name="Account" component={Account} />
+        {session ? (
+          <ProfileStack.Screen name="Manage Your Account">
+            {(props) => <Account {...props} session={session} />}
+          </ProfileStack.Screen>
+        ) : (
+            <ProfileStack.Screen name="Welcome in our app" component={LoginScreen} />
+        )}
       </ProfileStack.Navigator>
     )
   }
@@ -69,7 +73,7 @@ export default function App() {
       >
         <Tab.Screen name="CleanWalk" component={HomeScreen} />
         <Tab.Screen name="Map" component={MapScreen} />
-        <Tab.Screen name="Assos" component={HomeScreen} />
+        <Tab.Screen name="Assos" component={AssociationScreen} />
         <Tab.Screen name="Profile" component={ProfileStackScreen} />
       </Tab.Navigator>
     </NavigationContainer>
