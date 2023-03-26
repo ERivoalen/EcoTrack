@@ -27,6 +27,8 @@ export default function AccountPage({ session }) {
         fetchUserData();
     }, [session]);
 
+
+    //Fonctionne niquel
     const handleLogout = async () => {
         await supabase.auth.signOut();
     };

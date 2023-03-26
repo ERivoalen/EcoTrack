@@ -94,3 +94,4 @@ export default function Account({ session }) {
         </form>
     )
 }
+https://nsdqdfdhbzhmfxqiqdoq.supabase.co/storage/v1/object/public/imgassos/assos1.png
