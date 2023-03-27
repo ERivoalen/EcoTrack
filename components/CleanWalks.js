@@ -5,20 +5,22 @@ import MapView, { Marker, Polyline } from 'react-native-maps';
 import { supabase } from './supabase';
 
 export default function CleanWalkScreen() {
-    const [cleanWalkPaths, setCleanWalkPaths] = useState([]);
-
+    const [locations, setLocations] = useState([]);
+    console.log('Ici');
     useEffect(() => {
         const fetchCleanWalkPaths = async () => {
             const { data: cleanWalksData, error } = await supabase
                 .from('cleanWalks')
-                .select('*');
+                .select('*')
+                .order('id');
             if (error) {
                 console.log(error);
             } else {
-                setCleanWalkPaths(cleanWalksData);
+                setLocations(cleanWalksData);
             }
         };
         fetchCleanWalkPaths();
+        //console.log(locations);
     }, []);
 
     const drawPaths = () => {
@@ -27,13 +29,13 @@ export default function CleanWalkScreen() {
         for (let i = 0; i < locations.length - 1; i++) {
             const startLocation = locations[i];
             const endLocation = locations[i + 1];
-
+            console.log('LOOLL');
             paths.push(
                 <Polyline
                     key={`${startLocation.id}-${endLocation.id}`}
                     coordinates={[
-                        { latitude: startLocation.latitude, longitude: startLocation.longitude },
-                        { latitude: endLocation.latitude, longitude: endLocation.longitude },
+                        { latitude: startLocation.lattitude, longitude: startLocation.longitude },
+                        { latitude: endLocation.lattitude, longitude: endLocation.longitude },
                     ]}
                     strokeColor="#FF0000"
                     strokeWidth={2}
@@ -49,7 +51,7 @@ export default function CleanWalkScreen() {
                 <MapView
                     style={styles.map}
                     initialRegion={{
-                        latitude: locations[0].latitude,
+                        latitude: locations[0].lattitude,
                         longitude: locations[0].longitude,
                         latitudeDelta: 0.05,
                         longitudeDelta: 0.05,
