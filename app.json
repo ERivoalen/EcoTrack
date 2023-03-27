@@ -20,7 +20,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/eco-track-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#34c924"
       }
     },
     "web": {
