@@ -17,6 +17,7 @@ import MapScreen from './components/Map';
 import HomeScreen from './components/HomeScreen';
 import Account from './components/Account';
 import AssociationScreen from './components/Association';
+import CleanWalkScreen from './components/CleanWalks';
 
 
 const Tab = createBottomTabNavigator();
@@ -71,7 +72,7 @@ export default function App() {
           },
         })}
       >
-        <Tab.Screen name="CleanWalk" component={HomeScreen} />
+        <Tab.Screen name="CleanWalk" component={CleanWalkScreen} />
         <Tab.Screen name="Map" component={MapScreen} />
         <Tab.Screen name="Assos" component={AssociationScreen} />
         <Tab.Screen name="Profile" component={ProfileStackScreen} />
