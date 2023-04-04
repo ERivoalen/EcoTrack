@@ -14,8 +14,8 @@ import { Session } from '@supabase/supabase-js';
 import LoginScreen from './components/Login';
 import Account from './components/Account';
 import AssociationScreen from './components/Association';
-import MapScreen from './components/itinerary';
-import MarkersMapScreen from './components/Map';
+import MapScreen from './components/test';
+import MapScreen2 from './components/Map';
 
 
 const Tab = createBottomTabNavigator();
@@ -70,8 +70,8 @@ export default function App() {
           },
         })}
       >
-        <Tab.Screen name="CleanWalk" component={MapScreen} />
-        <Tab.Screen name="Map" component={MarkersMapScreen} />
+        
+        <Tab.Screen name="Map" component={MapScreen2} />
         <Tab.Screen name="Assos" component={AssociationScreen} />
         <Tab.Screen name="Profile" component={ProfileStackScreen} />
       </Tab.Navigator>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity,TextInput,Button } from 'react-native';
-import MapView, { Marker, Polyline ,Callout} from 'react-native-maps';
+import { StyleSheet, View, Text, TouchableOpacity, TextInput, Button } from 'react-native';
+import MapView, { Marker, Polyline, Callout } from 'react-native-maps';
 import axios from 'axios';
 import { supabase } from './supabase';
 
@@ -52,6 +52,7 @@ const MapScreen = () => {
     const [newMarkerCoordinate, setNewMarkerCoordinate] = useState(null);
 
     useEffect(() => {
+        
         const fetchPoints = async () => {
             const { data } = await supabase
                 .from('objects')
@@ -65,17 +66,10 @@ const MapScreen = () => {
 
             setPoints(formattedPoints);
         };
-        fetchMarkers();
+
         fetchPoints();
+        fetchMarkers();
     }, []);
-
-    const calculateItinerary = async (startPoint, endPoint) => {
-        const { data } = await axios.get(
-            `https://api.openrouteservice.org/v2/directions/foot-walking?api_key=${API_KEY}&start=${startPoint.longitude},${startPoint.latitude}&end=${endPoint.longitude},${endPoint.latitude}`
-        );
-
-        return data.features[0].geometry.coordinates;
-    };
 
     const fetchMarkers = async () => {
         const { data: markers, error } = await supabase.from('objects').select('*');
@@ -84,6 +78,29 @@ const MapScreen = () => {
         } else {
             setMarkers(markers);
         }
+    };
+
+    const calculateItinerary = async () => {
+        const { data } = await axios.get(
+            `https://api.openrouteservice.org/v2/directions/foot-walking?api_key=${API_KEY}&start=${points[0].longitude},${points[0].latitude}&end=${points[points.length - 1].longitude},${points[points.length - 1].latitude}&coordinates=${points
+                .map((point) => `${point.longitude},${point.latitude}`)
+                .join('|')}`
+        );
+
+        return data.features[0].geometry.coordinates;
+    };
+
+    const [itinerary, setItinerary] = useState([]);
+
+    const handleCalculateItinerary = async () => {
+        const itineraryCoordinates = await calculateItinerary();
+
+        const formattedItinerary = itineraryCoordinates.map((coordinate) => ({
+            latitude: coordinate[1],
+            longitude: coordinate[0],
+        }));
+
+        setItinerary(formattedItinerary);
     };
 
     const handleAddMarker = async (coordinate) => {
@@ -105,26 +122,6 @@ const MapScreen = () => {
     const handleMapPress = (event) => {
         const { coordinate } = event.nativeEvent;
         setNewMarkerCoordinate(coordinate);
-    };
-
-    const [itinerary, setItinerary] = useState([]);
-
-    const handleCalculateItinerary = async () => {
-        const itineraryCoordinates = [];
-
-        for (let i = 0; i < points.length - 1; i++) {
-            const startPoint = points[i];
-            const endPoint = points[i + 1];
-            const segmentCoordinates = await calculateItinerary(startPoint, endPoint);
-            itineraryCoordinates.push(...segmentCoordinates);
-        }
-
-        const formattedItinerary = itineraryCoordinates.map((coordinate) => ({
-            latitude: coordinate[1],
-            longitude: coordinate[0],
-        }));
-
-        setItinerary(formattedItinerary);
     };
 
     return (
@@ -164,6 +161,7 @@ const MapScreen = () => {
                         return null;
                     }
                 })}
+
                 {newMarkerCoordinate && (
                     <Marker coordinate={newMarkerCoordinate}>
                         <View style={{ backgroundColor: 'white', padding: 5 }}>
@@ -186,4 +184,3 @@ const MapScreen = () => {
 };
 
 export default MapScreen;
-``
