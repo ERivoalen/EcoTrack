@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, SectionList, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import {supabase} from './supabase';
+import { supabase } from './supabase';
 
 export default function AssociationScreen() {
     const [associations, setAssociations] = useState([]);
@@ -32,7 +32,10 @@ export default function AssociationScreen() {
                     source={{ uri: item.image_url }}
                     style={styles.associationItemImage}
                 />
-                <Text style={styles.associationItemText}>{item.name}</Text>
+                <View style={styles.associationItemTextContainer}>
+                    <Text style={styles.associationItemName}>{item.name}</Text>
+                    <Text style={styles.associationItemDescription}>{item.description}</Text>
+                </View>
             </TouchableOpacity>
         );
     };
@@ -41,7 +44,7 @@ export default function AssociationScreen() {
         <View style={styles.container}>
             <SectionList
                 sections={[
-                    { title: 'Les assos de cleanWalk', data: associations.slice(0, 3) },
+                    { title: 'Associations de protection de l\'environnement', data: associations.slice(0, 10) },
                 ]}
                 keyExtractor={(item) => item.id}
                 renderSectionHeader={({ section }) => <SectionHeader title={section.title} />}
@@ -73,7 +76,14 @@ const styles = StyleSheet.create({
         borderRadius: 25,
         marginRight: 10,
     },
-    associationItemText: {
+    associationItemTextContainer: {
+        flex: 1,
+    },
+    associationItemName: {
         fontSize: 16,
+        fontWeight: 'bold',
+    },
+    associationItemDescription: {
+        fontSize: 14,
     },
 });
