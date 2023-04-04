@@ -48,8 +48,8 @@ const MarkersMapScreen = () => {
             <MapView
                 style={{ flex: 1 }}
                 initialRegion={{
-                    latitude: 37.78825,
-                    longitude: -122.4324,
+                    latitude: 48.8534,
+                    longitude: 2.3488,
                     latitudeDelta: 0.0922,
                     longitudeDelta: 0.0421,
                 }}
