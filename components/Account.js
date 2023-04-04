@@ -1,71 +1,57 @@
-import { useState, useEffect } from 'react';
+import React from 'react';
+import { StyleSheet, View, Text, Button, ScrollView } from 'react-native';
 import { supabase } from './supabase';
-import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View, Button } from 'react-native';
-
-export default function AccountPage({ session }) {
-    const [email, setEmail] = useState('');
-    const [username, setUsername] = useState('');
-    const [loading, setLoading] = useState(null);
-    const [userData, setUserData] = useState(null);
-
-    useEffect(() => {
-        const fetchUserData = async () => {
-            try {
-                console.log(session.user.id)
-                const { data, error } = await supabase
-                    .from('profiles')
-                    .select('*')
-                    .eq('id', session.user.id)
-                    .single();
-                //console.log(data.id)
-                if (error) throw error;
-                setUserData(data);
-            } catch (error) {
-                console.log('Error fetching user data:', error.message);
-            }
-        };
-        fetchUserData();
-    }, [session]);
 
 
-    //Fonctionne niquel
-    const handleLogout = async () => {
-        await supabase.auth.signOut();
-    };
+export default function AboutUsPage() {
 
-    return (
-        <View>
-            <Text>Email: {userData?.username} </Text>
-            <TouchableOpacity style={styles.button} onPress={handleLogout}>
-                <Text style={styles.buttonText}>Log out</Text>
-            </TouchableOpacity>
-        </View>
-    );
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+  };
+  
+  return (
+    <ScrollView>
+    <View style={styles.container}>
+      <Text style={styles.title}>About Us</Text>
+      <Text style={styles.text}>
+        Eco Track is a mobile application dedicated to keeping our streets and
+        public spaces clean. Our mission is to make it easy and rewarding for
+        people to pick up litter and take care of their local communities.
+      </Text>
+      <Text style={styles.text}>
+        Our app is designed to gamify the process of cleaning up litter. Users
+        can earn points and rewards for picking up litter, and compete with
+        friends and other users to see who can collect the most trash.
+      </Text>
+      <Text style={styles.text}>
+        At Clean Walk, we believe that small actions can have a big impact. By
+        encouraging people to pick up litter, we can make our streets and public
+        spaces cleaner and more welcoming for everyone.
+      </Text>
+      <Text style={styles.text}>
+        Thank you for using Clean Walk and helping us make the world a cleaner
+        place!
+      </Text>
+      <Button title="Log out" onPress={handleLogout} />
+    </View>
+    </ScrollView>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#fff',
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 20,
-    },
-    input: {
-        width: '80%',
-        height: 40,
-        padding: 10,
-        borderWidth: 1,
-        borderColor: '#ccc',
-        marginBottom: 20,
-    },
-    button: {
-        backgroundColor: '#007AFF',
-        borderRadius: 5,
-        padding: 10,
-    },
-})
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#fff',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  text: {
+    fontSize: 16,
+    lineHeight: 24,
+    marginBottom: 20,
+  },
+});

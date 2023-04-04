@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, StyleSheet, Text, TextInput, View, Button } from 'react-native';
 import { supabase } from './supabase';
 
 export default function LoginScreen({ navigation }) {
@@ -14,7 +14,7 @@ export default function LoginScreen({ navigation }) {
             setLoading(true);
             const { error } = await supabase.auth.signUp({ email, password })
             if (error) throw error;
-            alert('You create an account !');
+            alert('Vous avez créé votre compte !');
         }
         catch (error) {
             alert(error.error_desccription || error.message)
@@ -56,12 +56,8 @@ export default function LoginScreen({ navigation }) {
                 onChangeText={setPassword}
                 secureTextEntry={true}
             />
-            <TouchableOpacity style={styles.button} onPress={handleLogin}>
-                <Text style={styles.buttonText}>Login</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={handleSignup}>
-                <Text style={styles.buttonText}>Sign Up</Text>
-            </TouchableOpacity>
+            <Button title="Login" onPress={handleLogin} />
+            <Button title="Sign Up" onPress={handleSignup} />
         </View>
     );
 }
@@ -85,10 +81,5 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#ccc',
         marginBottom: 20,
-    },
-    button: {
-        backgroundColor: '#007AFF',
-        borderRadius: 5,
-        padding: 10,
     },
 })
