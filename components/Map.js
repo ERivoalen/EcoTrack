@@ -172,6 +172,44 @@ const MapScreen = () => {
         setItineraryCalculated(true);
     };
 
+    const handleSaveItinerary = async (points, startPoint, endPoint) => {
+        try {
+            // Create a new itinerary in the 'itineraries' table
+            const { data, error } = await supabase
+                .from('itineraries')
+                .insert({ start_point: startPoint, end_point: endPoint })
+                .single();
+
+            if (error) {
+                throw error;
+            }
+
+            // Get the ID of the newly created itinerary
+            const itineraryId = data.id;
+
+            // Insert each point into the 'itinerary_points' table
+            const pointsData = points.map((point, index) => ({
+                itinerary_id: itineraryId,
+                point_order: index,
+                latitude: point.latitude,
+                longitude: point.longitude,
+            }));
+
+            const { error: pointsError } = await supabase
+                .from('itinerary_points')
+                .insert(pointsData);
+
+            if (pointsError) {
+                throw pointsError;
+            }
+
+            alert('Itinerary saved successfully!');
+        } catch (error) {
+            console.error(error);
+            alert('Failed to save itinerary.');
+        }
+    };
+
     return (
         <View style={styles.container}>
             <MapView
@@ -223,11 +261,11 @@ const MapScreen = () => {
                     </Marker>
                 )}
             </MapView>
-            <TouchableOpacity style={styles.button} onPress={handleCalculateItinerary}>
+            <TouchableOpacity style={styles.button} onPress={handleCalculateItinerary()}>
                 <Text style={styles.buttonText}>Calculate Itinerary</Text>
             </TouchableOpacity>
             {itineraryCalculated && (
-                <TouchableOpacity style={styles.button} onPress={() => { }}>
+                <TouchableOpacity style={styles.button} onPress={() => {handleSaveItinerary() }}>
                     <Text style={styles.buttonText}>Save Itinerary</Text>
                 </TouchableOpacity>
             )}
