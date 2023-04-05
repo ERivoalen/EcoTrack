@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, TouchableOpacity, TextInput, Button } from 'rea
 import MapView, { Marker, Polyline, Callout } from 'react-native-maps';
 import axios from 'axios';
 import { supabase } from './supabase';
+import dijkstra from './dijkstrajs'
 
 const API_KEY = '5b3ce3597851110001cf62488c1e79adf789490eb72896646a9c095e';
 const CENTER_COORDINATES = { latitude: 48.858093, longitude: 2.294694 };
