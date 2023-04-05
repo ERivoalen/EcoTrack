@@ -59,11 +59,17 @@ const MapScreen = () => {
 
     const fetchPoints = async () => {
         // Select one random point from the table
+        /*const {taille} = await supabase
+            .from('objects')
+            .select('count(*)')
+            .eq('dispo',true);
+        console.log(taille);*/
         const randomId = Math.floor(Math.random() * 60) + 1;
         const { data: randomPointData } = await supabase
             .from('objects')
             .select('id, latitude, longitude')
-            .eq('id', randomId);
+            .eq('id', randomId)
+            .eq('dispo', true);
         console.log(randomPointData);
 
         // Retrieve the latitude and longitude of the random point
