@@ -40,7 +40,7 @@ export default function CWScreen() {
         <View style={styles.container}>
             <SectionList
                 sections={[
-                    { title: 'CWs de protection de l\'environnement', data: CW.slice(0, 10) },
+                    { title: 'Les CleanWalks proposées jusqu\'alors !', data: CW.slice(0, 10) },
                 ]}
                 keyExtractor={(item) => item.id}
                 renderSectionHeader={({ section }) => <SectionHeader title={section.title} />}

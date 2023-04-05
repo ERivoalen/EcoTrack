@@ -14,6 +14,7 @@ import { Session } from '@supabase/supabase-js';
 import LoginScreen from './components/Login';
 import Account from './components/Account';
 import AssociationScreen from './components/Association';
+import CWScreen from './components/CleanWalks';
 import MapScreen from './components/test';
 import MapScreen2 from './components/Map';
 
@@ -55,7 +56,7 @@ export default function App() {
           tabBarIcon: ({ focused, color, size }) => {
             let iconName;
             //Appuyer sur les boutons
-            if (route.name === 'CleanWalk') {
+            if (route.name === 'Cleanwalk') {
               iconName = focused ? 'walk' : 'walk';
             } else if (route.name === 'Profile') {
               iconName = focused ? 'person' : 'person-outline';
@@ -70,7 +71,7 @@ export default function App() {
           },
         })}
       >
-        
+        <Tab.Screen name="Cleanwalk" component={CWScreen} />
         <Tab.Screen name="Map" component={MapScreen2} />
         <Tab.Screen name="Assos" component={AssociationScreen} />
         <Tab.Screen name="Profile" component={ProfileStackScreen} />
