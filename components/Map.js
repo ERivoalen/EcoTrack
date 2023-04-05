@@ -50,45 +50,49 @@ const MapScreen = () => {
     const [markers, setMarkers] = useState([]);
     const [newMarkerTitle, setNewMarkerTitle] = useState('');
     const [newMarkerCoordinate, setNewMarkerCoordinate] = useState(null);
+    const [count, setCount] = useState(0);
 
     useEffect(() => {
-        const fetchPoints = async () => {
-            // Select one random point from the table
-            const { data: randomPointData } = await supabase
-                .from('objects')
-                .select('latitude, longitude')
-                .limit(1);
-
-            // Retrieve the latitude and longitude of the random point
-            const { latitude: randomLatitude, longitude: randomLongitude } = randomPointData[0];
-
-            // Select all points in the table
-            const { data: allPointsData } = await supabase
-                .from('objects')
-                .select('latitude, longitude');
-
-            // Calculate the distance between each point and the random point using the Haversine formula
-            const formattedPoints = allPointsData
-                .map((point) => ({
-                    ...point,
-                    distance: haversine(point.latitude, point.longitude, randomLatitude, randomLongitude),
-                }))
-                // Sort the points by their distance to the random point
-                .sort((a, b) => a.distance - b.distance)
-                // Take the first 5 closest points
-                .slice(0, 10)
-                // Map the data to an array of point objects with latitude and longitude properties
-                .map((point) => ({
-                    latitude: point.latitude,
-                    longitude: point.longitude,
-                }));
-
-            // Set the points state to the array of formatted points
-            setPoints(formattedPoints);
-        };
         fetchMarkers();
         fetchPoints();
     }, []);
+
+    const fetchPoints = async () => {
+        // Select one random point from the table
+        const randomId = Math.floor(Math.random() * 60) + 1;
+        const { data: randomPointData } = await supabase
+            .from('objects')
+            .select('latitude, longitude')
+            .eq('id', randomId);
+            console.log(randomPointData);
+
+        // Retrieve the latitude and longitude of the random point
+        const { latitude: randomLatitude, longitude: randomLongitude } = randomPointData[0];
+
+        // Select all points in the table
+        const { data: allPointsData } = await supabase
+            .from('objects')
+            .select('latitude, longitude');
+
+        // Calculate the distance between each point and the random point using the Haversine formula
+        const formattedPoints = allPointsData
+            .map((point) => ({
+                ...point,
+                distance: haversine(point.latitude, point.longitude, randomLatitude, randomLongitude),
+            }))
+            // Sort the points by their distance to the random point
+            .sort((a, b) => a.distance - b.distance)
+            // Take the first 5 closest points
+            .slice(0, 10)
+            // Map the data to an array of point objects with latitude and longitude properties
+            .map((point) => ({
+                latitude: point.latitude,
+                longitude: point.longitude,
+            }));
+
+        // Set the points state to the array of formatted points
+        setPoints(formattedPoints);
+    };
 
     function haversine(lat1, lon1, lat2, lon2) {
         const R = 6371e3; // metres
@@ -107,6 +111,7 @@ const MapScreen = () => {
 
 
     const calculateItinerary = async (startPoint, endPoint) => {
+        const int =0;
         const { data } = await axios.get(
             `https://api.openrouteservice.org/v2/directions/foot-walking?api_key=${API_KEY}&start=${startPoint.longitude},${startPoint.latitude}&end=${endPoint.longitude},${endPoint.latitude}`
         );
@@ -147,6 +152,8 @@ const MapScreen = () => {
     const [itinerary, setItinerary] = useState([]);
 
     const handleCalculateItinerary = async () => {
+        await fetchPoints();
+        setCount(count + 1);
         const itineraryCoordinates = [];
 
         for (let i = 0; i < points.length - 1; i++) {
@@ -215,7 +222,7 @@ const MapScreen = () => {
                     </Marker>
                 )}
             </MapView>
-            <TouchableOpacity style={styles.button} onPress={handleCalculateItinerary}>
+            <TouchableOpacity style={styles.button} onPress={() => {handleCalculateItinerary()}}>
                 <Text style={styles.buttonText}>Calculate Itinerary</Text>
             </TouchableOpacity>
         </View>
