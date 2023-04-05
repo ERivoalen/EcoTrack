@@ -55,7 +55,7 @@ const MapScreen = () => {
 
     useEffect(() => {
         fetchMarkers();
-        fetchPoints();
+        //fetchPoints();
     }, []);
 
     const fetchPoints = async () => {
@@ -65,7 +65,7 @@ const MapScreen = () => {
             .from('objects')
             .select('latitude, longitude')
             .eq('id', randomId);
-            console.log(randomPointData);
+        console.log(randomPointData);
 
         // Retrieve the latitude and longitude of the random point
         const { latitude: randomLatitude, longitude: randomLongitude } = randomPointData[0];
@@ -112,7 +112,7 @@ const MapScreen = () => {
 
 
     const calculateItinerary = async (startPoint, endPoint) => {
-        const int =0;
+        const int = 0;
         const { data } = await axios.get(
             `https://api.openrouteservice.org/v2/directions/foot-walking?api_key=${API_KEY}&start=${startPoint.longitude},${startPoint.latitude}&end=${endPoint.longitude},${endPoint.latitude}`
         );
@@ -151,10 +151,10 @@ const MapScreen = () => {
     };
 
     const [itinerary, setItinerary] = useState([]);
+    const [itineraryCalculated, setItineraryCalculated] = useState(false);
 
     const handleCalculateItinerary = async () => {
         await fetchPoints();
-        setCount(count + 1);
         const itineraryCoordinates = [];
 
         for (let i = 0; i < points.length - 1; i++) {
@@ -170,6 +170,7 @@ const MapScreen = () => {
         }));
 
         setItinerary(formattedItinerary);
+        setItineraryCalculated(true);
     };
 
     return (
@@ -223,9 +224,14 @@ const MapScreen = () => {
                     </Marker>
                 )}
             </MapView>
-            <TouchableOpacity style={styles.button} onPress={() => {handleCalculateItinerary()}}>
+            <TouchableOpacity style={styles.button} onPress={handleCalculateItinerary}>
                 <Text style={styles.buttonText}>Calculate Itinerary</Text>
             </TouchableOpacity>
+            {itineraryCalculated && (
+                <TouchableOpacity style={styles.button} onPress={() => { }}>
+                    <Text style={styles.buttonText}>Save Itinerary</Text>
+                </TouchableOpacity>
+            )}
         </View>
     );
 };
