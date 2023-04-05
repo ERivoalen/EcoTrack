@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity,TextInput,Button } from 'react-native';
-import MapView, { Marker, Polyline ,Callout} from 'react-native-maps';
+import { StyleSheet, View, Text, TouchableOpacity, TextInput, Button } from 'react-native';
+import MapView, { Marker, Polyline, Callout } from 'react-native-maps';
 import axios from 'axios';
 import { supabase } from './supabase';
 
@@ -53,21 +53,58 @@ const MapScreen = () => {
 
     useEffect(() => {
         const fetchPoints = async () => {
-            const { data } = await supabase
+            // Select one random point from the table
+            const { data: randomPointData } = await supabase
                 .from('objects')
-                .select('*')
-                .limit(5);
+                .select('latitude, longitude')
+                .limit(1);
 
-            const formattedPoints = data.map((point) => ({
-                latitude: point.latitude,
-                longitude: point.longitude,
-            }));
+            // Retrieve the latitude and longitude of the random point
+            const { latitude: randomLatitude, longitude: randomLongitude } = randomPointData[0];
 
+            // Select all points in the table
+            const { data: allPointsData } = await supabase
+                .from('objects')
+                .select('latitude, longitude');
+
+            // Calculate the distance between each point and the random point using the Haversine formula
+            const formattedPoints = allPointsData
+                .map((point) => ({
+                    ...point,
+                    distance: haversine(point.latitude, point.longitude, randomLatitude, randomLongitude),
+                }))
+                // Sort the points by their distance to the random point
+                .sort((a, b) => a.distance - b.distance)
+                // Take the first 5 closest points
+                .slice(0, 10)
+                // Map the data to an array of point objects with latitude and longitude properties
+                .map((point) => ({
+                    latitude: point.latitude,
+                    longitude: point.longitude,
+                }));
+
+            // Set the points state to the array of formatted points
             setPoints(formattedPoints);
         };
         fetchMarkers();
         fetchPoints();
     }, []);
+
+    function haversine(lat1, lon1, lat2, lon2) {
+        const R = 6371e3; // metres
+        const φ1 = (lat1 * Math.PI) / 180; // φ, λ in radians
+        const φ2 = (lat2 * Math.PI) / 180;
+        const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+        const Δλ = ((lon2 - lon1) * Math.PI) / 180;
+
+        const a =
+            Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+            Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        return R * c; // in metres
+    }
+
 
     const calculateItinerary = async (startPoint, endPoint) => {
         const { data } = await axios.get(
