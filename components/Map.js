@@ -59,10 +59,11 @@ const MapScreen = () => {
 
     const fetchPoints = async () => {
         // Select one random point from the table
+        const taille= await supabase.from('Objects').count().eq()
         const randomId = Math.floor(Math.random() * 60) + 1;
         const { data: randomPointData } = await supabase
             .from('objects')
-            .select('latitude, longitude')
+            .select('latitude, longitude,id')
             .eq('id', randomId);
         console.log(randomPointData);
 
@@ -261,11 +262,11 @@ const MapScreen = () => {
                     </Marker>
                 )}
             </MapView>
-            <TouchableOpacity style={styles.button} onPress={handleCalculateItinerary()}>
+            <TouchableOpacity style={styles.button} onPress={handleCalculateItinerary}>
                 <Text style={styles.buttonText}>Calculate Itinerary</Text>
             </TouchableOpacity>
             {itineraryCalculated && (
-                <TouchableOpacity style={styles.button} onPress={() => {handleSaveItinerary() }}>
+                <TouchableOpacity style={styles.button} onPress={() => {handleSaveItinerary }}>
                     <Text style={styles.buttonText}>Save Itinerary</Text>
                 </TouchableOpacity>
             )}
