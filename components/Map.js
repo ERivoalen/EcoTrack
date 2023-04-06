@@ -59,12 +59,17 @@ const MapScreen = () => {
 
     const fetchPoints = async () => {
         // Select one random point from the table
-        const taille= await supabase.from('Objects').count().eq()
+        /*const {taille} = await supabase
+            .from('objects')
+            .select('count(*)')
+            .eq('dispo',true);
+        console.log(taille);*/
         const randomId = Math.floor(Math.random() * 60) + 1;
         const { data: randomPointData } = await supabase
             .from('objects')
-            .select('latitude, longitude,id')
-            .eq('id', randomId);
+            .select('id, latitude, longitude')
+            .eq('id', randomId)
+            .eq('dispo', true);
         console.log(randomPointData);
 
         // Retrieve the latitude and longitude of the random point
@@ -73,13 +78,15 @@ const MapScreen = () => {
         // Select all points in the table
         const { data: allPointsData } = await supabase
             .from('objects')
-            .select('latitude, longitude');
+            .select('id, latitude, longitude')
+            .eq('dispo',true);
 
         // Calculate the distance between each point and the random point using the Haversine formula
         const formattedPoints = allPointsData
             .map((point) => ({
                 ...point,
                 distance: haversine(point.latitude, point.longitude, randomLatitude, randomLongitude),
+                id: point.id,
             }))
             // Sort the points by their distance to the random point
             .sort((a, b) => a.distance - b.distance)
@@ -87,6 +94,7 @@ const MapScreen = () => {
             .slice(0, 10)
             // Map the data to an array of point objects with latitude and longitude properties
             .map((point) => ({
+                id: point.id,
                 latitude: point.latitude,
                 longitude: point.longitude,
             }));
@@ -121,7 +129,7 @@ const MapScreen = () => {
     };
 
     const fetchMarkers = async () => {
-        const { data: markers, error } = await supabase.from('objects').select('*');
+        const { data: markers, error } = await supabase.from('objects').select('*').eq('dispo',true);
         if (error) {
             console.error(error);
         } else {
@@ -173,35 +181,23 @@ const MapScreen = () => {
         setItineraryCalculated(true);
     };
 
-    const handleSaveItinerary = async (points, startPoint, endPoint) => {
+    const handleSaveItinerary = async () => {
+
+        const pointIds = []
+
+        for(let i=0; i<10;i++)
+        {
+            pointIds[i]=points[i].id;
+        }
+        
         try {
-            // Create a new itinerary in the 'itineraries' table
             const { data, error } = await supabase
-                .from('itineraries')
-                .insert({ start_point: startPoint, end_point: endPoint })
+                .from('cleanWalks')
+                .insert({ start_obj: points[0].id, end_obj: points[9].id, objects_id: pointIds})
                 .single();
 
             if (error) {
                 throw error;
-            }
-
-            // Get the ID of the newly created itinerary
-            const itineraryId = data.id;
-
-            // Insert each point into the 'itinerary_points' table
-            const pointsData = points.map((point, index) => ({
-                itinerary_id: itineraryId,
-                point_order: index,
-                latitude: point.latitude,
-                longitude: point.longitude,
-            }));
-
-            const { error: pointsError } = await supabase
-                .from('itinerary_points')
-                .insert(pointsData);
-
-            if (pointsError) {
-                throw pointsError;
             }
 
             alert('Itinerary saved successfully!');
@@ -209,6 +205,21 @@ const MapScreen = () => {
             console.error(error);
             alert('Failed to save itinerary.');
         }
+
+        for(let i=0; i<10;i++)
+        {
+            const { data, error } = await supabase
+                .from('objects')
+                .update({dispo: false})
+                .eq('id',pointIds[i]);
+
+            if (error) {
+                throw error;
+            }
+        }
+
+        
+        fetchMarkers();
     };
 
     return (
@@ -266,7 +277,7 @@ const MapScreen = () => {
                 <Text style={styles.buttonText}>Calculate Itinerary</Text>
             </TouchableOpacity>
             {itineraryCalculated && (
-                <TouchableOpacity style={styles.button} onPress={() => {handleSaveItinerary }}>
+                <TouchableOpacity style={styles.button} onPress={handleSaveItinerary}>
                     <Text style={styles.buttonText}>Save Itinerary</Text>
                 </TouchableOpacity>
             )}
