@@ -38,7 +38,7 @@ export default function App() {
     return (
       <ProfileStack.Navigator>
         {session ? (
-          <ProfileStack.Screen name="Manage Your Account">
+          <ProfileStack.Screen name ="About us">
             {(props) => <AboutUsPage {...props} session={session} />}
           </ProfileStack.Screen>
         ) : (
