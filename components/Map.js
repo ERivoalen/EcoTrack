@@ -62,8 +62,6 @@ const MapScreen = () => {
             .from('objects')
             .select('id')
             .eq('dispo',true);
-        console.log(taille.length);
-        console.log(taille.id);
 
         const randomId = Math.floor(Math.random() * taille.length) + 1;
         const { data: randomPointData } = await supabase
