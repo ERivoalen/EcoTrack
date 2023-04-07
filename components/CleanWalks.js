@@ -21,7 +21,6 @@ const CleanWalks = () => {
                 .select('*');
             if (error) console.log('Error fetching clean walks:', error);
             else setCleanWalks(cleanWalks);
-            console.log('Ok');
         }
         fetchCleanWalks();
     }, [refresh]);
@@ -42,15 +41,12 @@ const CleanWalks = () => {
             if (error) console.log('Error fetching points:', error);
             else points.push(objects[0]);
         }
-        console.log(points)
         setCleanWalkPoints(points);
         //handleCalculateItinerary();
         const itineraryCoordinates = [];
-        console.log(cleanWalkPoints);
         for (let i = 0; i < points.length - 1; i++) {
             const startPoint = points[i];
             const endPoint = points[i + 1];
-            console.log('bouvle');
             const segmentCoordinates = await calculateItinerary(startPoint, endPoint);
             itineraryCoordinates.push(...segmentCoordinates);
         }
@@ -70,22 +66,18 @@ const CleanWalks = () => {
     };
 
     const calculateItinerary = async (startPoint, endPoint) => {
-        console.log('Ici');
         const { data } = await axios.get(
             `https://api.openrouteservice.org/v2/directions/foot-walking?api_key=${API_KEY}&start=${startPoint.longitude},${startPoint.latitude}&end=${endPoint.longitude},${endPoint.latitude}`
         );
-        console.log(data);
 
         return data.features[0].geometry.coordinates;
     };
 
     const handleCalculateItinerary = async () => {
         const itineraryCoordinates = [];
-        console.log(cleanWalkPoints);
         for (let i = 0; i < cleanWalkPoints.length - 1; i++) {
             const startPoint = cleanWalkPoints[i];
             const endPoint = cleanWalkPoints[i + 1];
-            console.log('bouvle');
             const segmentCoordinates = await calculateItinerary(startPoint, endPoint);
             itineraryCoordinates.push(...segmentCoordinates);
         }
