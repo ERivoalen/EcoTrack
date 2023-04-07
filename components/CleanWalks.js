@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, Button, StyleSheet,ScrollView } from 'react-native';
 import MapView, { Marker, Polyline, Callout } from 'react-native-maps';
 import { supabase } from './supabase';
 import axios from 'axios';
@@ -125,18 +125,20 @@ const CleanWalks = () => {
         );
     } else {
         return (
-            <View style={styles.container}>
-                <Text style={styles.header}>Clean Walks</Text>
-                {cleanWalks.map((cleanWalk) => (
-                    <View key={cleanWalk.id} style={styles.item}>
-                        <Text style={styles.title}>{`Clean Walk ${cleanWalk.id}`}</Text>
-                        <Button
-                            title="View Itinerary"
-                            onPress={() => { handleViewItinerary(cleanWalk) }}
-                        />
-                    </View>
-                ))}
-            </View>
+            <ScrollView>
+                <View style={styles.container}>
+                    <Text style={styles.header}>Clean Walks</Text>
+                    {cleanWalks.map((cleanWalk) => (
+                        <View key={cleanWalk.id} style={styles.item}>
+                            <Text style={styles.title}>{`Clean Walk ${cleanWalk.id}`}</Text>
+                            <Button
+                                title="View Itinerary"
+                                onPress={() => { handleViewItinerary(cleanWalk) }}
+                            />
+                        </View>
+                    ))}
+                </View>
+            </ScrollView>
         );
     }
 };
