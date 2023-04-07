@@ -12,7 +12,7 @@ import { Session } from '@supabase/supabase-js';
 //Import d'ecran
 
 import LoginScreen from './components/Login';
-import Account from './components/Account';
+import AboutUsPage from './components/Account';
 import AssociationScreen from './components/Association';
 import CleanWalks from './components/CleanWalks';
 import MapScreen from './components/test';
@@ -74,7 +74,7 @@ export default function App() {
         <Tab.Screen name="Cleanwalk" component={CleanWalks} />
         <Tab.Screen name="Map" component={MapScreen2} />
         <Tab.Screen name="Assos" component={AssociationScreen} />
-        <Tab.Screen name="Profile" component={ProfileStackScreen} />
+        <Tab.Screen name="Profile" component={AboutUsPage} />
       </Tab.Navigator>
     </NavigationContainer>
   );
