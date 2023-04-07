@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text, Button, ScrollView, Link } from 'react-native';
+import { StyleSheet, View, Text, Button, ScrollView, Linking } from 'react-native';
 import { supabase } from './supabase';
 
 
@@ -20,7 +20,9 @@ export default function AboutUsPage() {
       </Text>
       <Text style={styles.text}>
       En France, les dépôts sauvages sont des vrais problèmes qui impactent le 
-      quotidien et l’environnement des citoyens. En effet, selon le site Citeo : 
+      quotidien et l’environnement des citoyens. En effet, selon le site
+      <Text style={{color: 'blue', textDecorationLine: 'underline'}} onPress={() => Linking.openURL('https://www.citeo.com/le-mag/trier-pour-lutter-contre-le-fleau-des-dechets-sauvages')}> Citeo </Text>
+      : 
       « Les Français sont 98% à juger cette situation inadmissible et 87% d’entre 
       eux estiment que le comportement incivique des citoyens en est la 1ère cause. ».
       </Text>
@@ -29,10 +31,9 @@ export default function AboutUsPage() {
         41 000 tonnes au bord ou à la surface des cours d’eau, 2 900 tonnes sur le littoral, 
         129 tonnes en montagne.
       </Text>
-      <Link>https://www.citeo.com/le-mag/trier-pour-lutter-contre-le-fleau-des-dechets-sauvages</Link>
       <Text style={styles.text}>
-        Thank you for using Eco Track and helping us make the world a cleaner
-        place!
+        Merci à vous d'utiliser l'application Eco Track et de nous aider à changer
+        le monde en un endroit plus propre !
       </Text>
       <Button title="Log out" onPress={handleLogout} />
     </View>
