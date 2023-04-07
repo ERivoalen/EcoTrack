@@ -9,7 +9,7 @@
     "splash": {
       "image": "./assets/eco-track-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#34c924"
+      "backgroundColor": "#E9F0CF"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -20,7 +20,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/eco-track-icon.png",
-        "backgroundColor": "#34c924"
+        "backgroundColor": "#E9F0CF"
       }
     },
     "web": {
