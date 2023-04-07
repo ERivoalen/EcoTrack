@@ -39,7 +39,7 @@ export default function App() {
       <ProfileStack.Navigator>
         {session ? (
           <ProfileStack.Screen name="Manage Your Account">
-            {(props) => <Account {...props} session={session} />}
+            {(props) => <AboutUsPage {...props} session={session} />}
           </ProfileStack.Screen>
         ) : (
           <ProfileStack.Screen name="Welcome in our app" component={LoginScreen} />
@@ -74,7 +74,7 @@ export default function App() {
         <Tab.Screen name="Cleanwalk" component={CleanWalks} />
         <Tab.Screen name="Map" component={MapScreen2} />
         <Tab.Screen name="Assos" component={AssociationScreen} />
-        <Tab.Screen name="Profile" component={AboutUsPage} />
+        <Tab.Screen name="Profile" component={ProfileStackScreen} />
       </Tab.Navigator>
     </NavigationContainer>
   );
