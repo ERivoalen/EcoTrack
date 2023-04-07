@@ -12,6 +12,7 @@ const CleanWalks = () => {
     const [cleanWalkPoints, setCleanWalkPoints] = useState([]);
     const [itinerary, setItinerary] = useState([]);
     const [itineraryCalculated, setItineraryCalculated] = useState(false);
+    const [refresh, setRefresh] = useState(false); // new state variable
 
     useEffect(() => {
         async function fetchCleanWalks() {
@@ -23,8 +24,11 @@ const CleanWalks = () => {
             console.log('Ok');
         }
         fetchCleanWalks();
-    }, []);
+    }, [refresh]);
 
+    const handleRefresh = () => {
+        setRefresh(!refresh);
+    };
 
     const handleViewItinerary = async (cleanWalk) => {
         setSelectedCleanWalk(cleanWalk);
@@ -33,7 +37,7 @@ const CleanWalks = () => {
         for (let i = 0; i < cleanWalk.objects_id.length; i++) {
             let { data: objects, error } = await supabase
                 .from('objects')
-                .select('latitude, longitude')
+                .select('latitude, longitude,title')
                 .eq('id', cleanWalk.objects_id[i]);
             if (error) console.log('Error fetching points:', error);
             else points.push(objects[0]);
@@ -113,7 +117,8 @@ const CleanWalks = () => {
                     longitudeDelta: 0.0421,
                 }}>
                     {cleanWalkPoints.map((point, index) => (
-                        <Marker key={index} coordinate={{ latitude: point.latitude, longitude: point.longitude }} />
+                        <Marker key={index} coordinate={{ latitude: point.latitude, longitude: point.longitude }}
+                            title={point.title} />
                     ))}
                     {itineraryCalculated && (
                         <Polyline coordinates={itinerary} strokeColor="#f00" strokeWidth={3} />
@@ -128,6 +133,7 @@ const CleanWalks = () => {
             <ScrollView>
                 <View style={styles.container}>
                     <Text style={styles.header}>Clean Walks</Text>
+                    <Button title="Refresh" onPress={handleRefresh} />
                     {cleanWalks.map((cleanWalk) => (
                         <View key={cleanWalk.id} style={styles.item}>
                             <Text style={styles.title}>{`Clean Walk ${cleanWalk.id}`}</Text>

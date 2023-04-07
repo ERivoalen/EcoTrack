@@ -216,9 +216,8 @@ const MapScreen = () => {
                 throw error;
             }
         }
-
-        
         fetchMarkers();
+        fetchPoints();
     };
 
     return (
