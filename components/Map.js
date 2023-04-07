@@ -50,7 +50,6 @@ const MapScreen = () => {
     const [markers, setMarkers] = useState([]);
     const [newMarkerTitle, setNewMarkerTitle] = useState('');
     const [newMarkerCoordinate, setNewMarkerCoordinate] = useState(null);
-    const [count, setCount] = useState(0);
 
     useEffect(() => {
         fetchMarkers();
@@ -59,18 +58,19 @@ const MapScreen = () => {
 
     const fetchPoints = async () => {
         // Select one random point from the table
-        /*const {taille} = await supabase
+        const {data: taille} = await supabase
             .from('objects')
-            .select('count(*)')
+            .select('id')
             .eq('dispo',true);
-        console.log(taille);*/
-        const randomId = Math.floor(Math.random() * 60) + 1;
+        console.log(taille.length);
+        console.log(taille.id);
+
+        const randomId = Math.floor(Math.random() * taille.length) + 1;
         const { data: randomPointData } = await supabase
             .from('objects')
             .select('id, latitude, longitude')
-            .eq('id', randomId)
+            .eq('id', taille[randomId].id)
             .eq('dispo', true);
-        console.log(randomPointData);
 
         // Retrieve the latitude and longitude of the random point
         const { latitude: randomLatitude, longitude: randomLongitude } = randomPointData[0];
@@ -120,7 +120,6 @@ const MapScreen = () => {
 
 
     const calculateItinerary = async (startPoint, endPoint) => {
-        const int = 0;
         const { data } = await axios.get(
             `https://api.openrouteservice.org/v2/directions/foot-walking?api_key=${API_KEY}&start=${startPoint.longitude},${startPoint.latitude}&end=${endPoint.longitude},${endPoint.latitude}`
         );

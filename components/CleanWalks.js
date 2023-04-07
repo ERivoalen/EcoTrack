@@ -1,80 +1,113 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, SectionList, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { StyleSheet, Text, View, Button, FlatList } from 'react-native';
+import MapView, { Polyline } from 'react-native-maps';
 import { supabase } from './supabase';
 
-export default function CWScreen() {
-    const [CW, setCW] = useState([]);
+const CleanWalksScreen = () => {
+    const [cleanWalks, setCleanWalks] = useState([]);
+    const [selectedCleanWalk, setSelectedCleanWalk] = useState({ points: [] });
 
     useEffect(() => {
-        const fetchCW = async () => {
-            const { data: CWData, error } = await supabase
+        const fetchCleanWalks = async () => {
+            const { data, error } = await supabase
                 .from('cleanWalks')
-                .select('*');
-            if (error) {
-                console.log(error);
-            } else {
-                setCW(CWData);
-            }
+                .select('id, objects_id');
+            if (error) console.log('Error fetching clean walks:', error);
+            else setCleanWalks(data);
         };
-        fetchCW();
+        fetchCleanWalks();
     }, []);
 
-    const SectionHeader = ({ title }) => {
-        return (
-            <Text style={styles.sectionHeader}>{title}</Text>
-        );
+    const fetchCleanWalkPoints = async (pointsIds) => {
+        const { data, error } = await supabase
+            .from('objects')
+            .select('latitude, longitude')
+            .in('id', pointsIds);
+        if (error) {
+            console.log('Error fetching clean walk points:', error);
+        } else {
+            const points = data
+                .filter((point) => point.latitude && point.longitude)
+                .map((point) => ({
+                    latitude: point.latitude,
+                    longitude: point.longitude,
+                }));
+            setSelectedCleanWalk({ points });
+        }
     };
-
-    const CWItem = ({ item }) => {
-        return (
-            <TouchableOpacity style={styles.CWItem}>
-                <View style={styles.CWItemTextContainer}>
-                    <Text style={styles.CWStart}>{item.start_obj}</Text>
-                    <Text style={styles.CWEnd}>{item.end_obj}</Text>
-                </View>
-            </TouchableOpacity>
-        );
+    const clearSelectedCleanWalk = () => {
+        setSelectedCleanWalk(null);
     };
 
     return (
         <View style={styles.container}>
-            <SectionList
-                sections={[
-                    { title: 'Les CleanWalks proposées jusqu\'alors !', data: CW.slice(0, 10) },
-                ]}
-                keyExtractor={(item) => item.id}
-                renderSectionHeader={({ section }) => <SectionHeader title={section.title} />}
-                renderItem={({ item }) => <CWItem item={item} />}
-            />
+            {selectedCleanWalk ? (
+                <View style={styles.mapContainer}>
+                    <MapView
+                        style={styles.map}
+                        initialRegion={{
+                            latitude: selectedCleanWalk.points[0].latitude,
+                            longitude: selectedCleanWalk.points[0].longitude,
+                            latitudeDelta: 0.01,
+                            longitudeDelta: 0.01,
+                        }}
+                    >
+                        {selectedCleanWalk.points && selectedCleanWalk.points.length > 0 && (
+                            <Polyline
+                                coordinates={selectedCleanWalk.points.map((point) => ({
+                                    latitude: point.latitude,
+                                    longitude: point.longitude,
+                                }))}
+                                strokeColor="#000"
+                                strokeWidth={2}
+                            />
+                        )}
+                    </MapView>
+                    <Button title="Back" onPress={clearSelectedCleanWalk} />
+                </View>
+            ) : (
+                <FlatList
+                    data={cleanWalks}
+                    renderItem={({ item }) => (
+                        <View style={styles.cleanWalkContainer}>
+                            <Text style={styles.cleanWalkTitle}>Clean Walk {item.id}</Text>
+                            <Button
+                                title="View Itinerary"
+                                onPress={() => fetchCleanWalkPoints(item.points)}
+                            />
+                        </View>
+                    )}
+                    keyExtractor={(item) => item.id.toString()}
+                />
+            )}
         </View>
     );
 };
 
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 20,
-    },
-    sectionHeader: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        backgroundColor: '#eee',
-        padding: 10,
-    },
-    CWItem: {
-        flexDirection: 'row',
+        backgroundColor: '#fff',
         alignItems: 'center',
+        justifyContent: 'center',
+    },
+    cleanWalkContainer: {
         padding: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: '#ddd',
     },
-    CWItemTextContainer: {
+    cleanWalkTitle: {
+        fontSize: 18,
+    },
+    mapContainer: {
         flex: 1,
+        width: '100%',
+        height: '100%',
     },
-    CWStart: {
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
-    CWEnd: {
-        fontSize: 16,
-        fontWeight: 'bold',
+    map: {
+        ...StyleSheet.absoluteFillObject,
     },
 });
+
+export default CleanWalksScreen;
